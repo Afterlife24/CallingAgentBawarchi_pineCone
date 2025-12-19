@@ -1,0 +1,23 @@
+# livekit
+livekit
+livekit.agents
+livekit-api
+livekit-agents[openai, silero, deepgram]
+livekit-plugins-noise-cancellation
+
+# openai
+livekit.plugins.openai
+openai
+
+# utilities
+python-dotenv
+twilio
+silero-vad
+pymongo
+tzdata
+aiohttp
+
+# Pinecone - Vector database for hierarchical menu search
+# Used for: menu item search with hierarchical filtering (section/sub_section/protein)
+# Index: "menudemo" (hierarchical metadata structure)
+pinecone
