@@ -89,21 +89,37 @@ class CreateOrderArgs(BaseModel):
 
 # 🔴 ADDED: Pinecone menu search tool with hierarchical filtering
 @function_tool()
+@function_tool()
 async def lookup_menu(query: str):
     """
-    Search menu items using Pinecone with hierarchical filtering.
-    This automatically filters by section/sub_section/protein to reduce token usage by 80-90%.
-    
-    Examples:
-    - "chicken biryani" → searches only non_veg/biryani/chicken items (~8-10 items instead of 399)
-    - "masala puri" → searches only veg/chaat items (~13 items instead of 399)
-    - "mutton biryani" → searches only non_veg/biryani/mutton items (~5 items instead of 399)
-    
-    ALWAYS use this tool for menu, price, and category queries.
+    Search menu items using Pinecone.
+    ALWAYS normalize query to English before searching.
     """
-    # Run blocking Pinecone + OpenAI calls in a thread
-    # search_menu() automatically applies hierarchical filtering
-    return await asyncio.to_thread(search_menu, query)
+
+    from openai import OpenAI
+    client = OpenAI()
+
+    # 🔄 ALWAYS normalize to English (safe + deterministic)
+    translation = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "Translate the following food order text into English. "
+                    "If it is already in English, return it unchanged. "
+                    "Return ONLY the translated text."
+                ),
+            },
+            {"role": "user", "content": query},
+        ],
+        temperature=0,
+    )
+
+    normalized_query = translation.choices[0].message.content.strip()
+
+    return await asyncio.to_thread(search_menu, normalized_query)
+
 
 def check_customer_status_tool_factory(agent_instance):
     """Factory function to create a check_customer_status tool to check if customer is new or returning"""
