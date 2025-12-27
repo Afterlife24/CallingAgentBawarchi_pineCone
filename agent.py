@@ -89,12 +89,14 @@ class CreateOrderArgs(BaseModel):
 
 # 🔴 ADDED: Pinecone menu search tool with hierarchical filtering
 @function_tool()
-@function_tool()
 async def lookup_menu(query: str):
     """
     Search menu items using Pinecone.
     ALWAYS normalize query to English before searching.
     """
+    
+    # 🔍 DEBUG: Log when lookup_menu is called
+    log.info(f"🔍 DEBUG: lookup_menu called with query: '{query}'")
 
     from openai import OpenAI
     client = OpenAI()
@@ -336,11 +338,11 @@ class RestaurantAgent(Agent):
             return None  # Return None to ignore the message
         
         try:
-            # Use reasonable timeout - balance between waiting and responsiveness
-            # If LLM is consistently slow, fallback will kick in
+            # Use longer timeout for multilingual processing and tool calls
+            # Telugu/Hindi processing + tool calls need more time
             response = await asyncio.wait_for(
                 super().on_message(message, session),
-                timeout=3.0  # Optimized timeout - faster fallback for better UX
+                timeout=8.0  # Increased timeout for multilingual + tool processing
             )
             return response
         except asyncio.TimeoutError:
@@ -353,6 +355,9 @@ class RestaurantAgent(Agent):
 
     def _get_smart_fallback_response(self, msg: str):
         msg = msg.lower()
+        # 🔍 DEBUG: Log fallback usage
+        log.warning(f"🔍 DEBUG: Using fallback for message: '{msg}'")
+        
         if any(x in msg for x in ['order', 'food', 'menu', 'biryani', 'chicken', 'mutton', 'rice', 'curry']):
             return "I can help you place an order! Please tell me what you'd like to order."
         if any(x in msg for x in ['hello', 'hi', 'hey']):
@@ -592,12 +597,8 @@ async def entrypoint(ctx: JobContext):
         voice="alloy",  # Options: alloy, echo, shimmer, nova, fable, onyx
         modalities=["audio", "text"],
         temperature=0.2,
-        turn_detection={
-            "type": "server_vad",
-            "threshold": 0.5,
-            "prefix_padding_ms": 300,
-            "silence_duration_ms": 500,
-        },
+        # Simplified turn_detection to avoid model_dump error
+        turn_detection=None,  # Use default turn detection
     )
 
     # Create Agent with RealtimeModel (no separate STT/TTS/LLM needed)
