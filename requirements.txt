@@ -1,23 +1,44 @@
-# livekit
-livekit
-livekit.agents
-livekit-api
-livekit-agents[openai, silero, deepgram]
-livekit-plugins-noise-cancellation
+# Restaurant Voice Agent - WORKING VERSIONS
+# These exact versions are confirmed to work correctly
+# DO NOT upgrade without testing - newer versions may cause hanging issues
 
-# openai
-livekit.plugins.openai
-openai
+# LiveKit Core (CRITICAL - exact versions required)
+livekit==1.0.12
+livekit-agents==1.2.8
+livekit-api==1.0.5
+livekit-protocol==1.0.5
 
-# utilities
-python-dotenv
-twilio
-silero-vad
-pymongo
-tzdata
-aiohttp
+# LiveKit Plugins (CRITICAL - must match agents version)
+livekit-plugins-openai==1.2.8
+livekit-plugins-noise-cancellation==0.2.5
+livekit-plugins-silero==1.2.8
+livekit-plugins-deepgram==1.2.8
 
-# Pinecone - Vector database for hierarchical menu search
-# Used for: menu item search with hierarchical filtering (section/sub_section/protein)
-# Index: "menudemo" (hierarchical metadata structure)
-pinecone
+# Additional LiveKit plugins (may be needed for compatibility)
+livekit-plugins-bey==1.2.8
+livekit-plugins-cartesia==1.2.8
+livekit-plugins-google==1.2.8
+livekit-plugins-tavus==1.2.8
+
+# OpenAI (CRITICAL - v2.x causes compatibility issues)
+openai==1.101.0
+
+# Vector Database
+pinecone==8.0.0
+
+# Database
+pymongo==4.14.1
+
+# Utilities
+python-dotenv==1.1.1
+aiohttp==3.12.15
+twilio==9.8.2
+tzdata==2025.2
+
+# Audio Processing
+silero-vad==6.0.0
+
+# Additional dependencies that may be needed
+pydantic>=2.0.0
+asyncio-mqtt
+websockets
