@@ -593,7 +593,6 @@ async def entrypoint(ctx: JobContext):
     # Using OpenAI Realtime Model with explicit model/version and server-side VAD
     realtime_model = realtime.RealtimeModel(
         api_key=openai_api_key,
-        model="gpt-4o-mini-realtime-preview-2024-12-17",
         voice="alloy",  # Options: alloy, echo, shimmer, nova, fable, onyx
         modalities=["audio", "text"],
         temperature=0.2,
